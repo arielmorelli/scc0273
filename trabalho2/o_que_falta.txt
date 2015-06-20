@@ -1,0 +1,12 @@
+Implementar as funções:
+> setMotorA( int vel );
+> setMotorB( int vel );
+> readGiro(); <---  tenho um exemplo mas nao entendi, pego na aula
+> readColor();
+
+Falta colocar os métodos de motor e giro:
+> void turnAntiClockWise();
+> void turnClockWise();
+
+Falta testar e calibrar:
+> CheckSonar();
