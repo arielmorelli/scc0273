@@ -1,12 +1,12 @@
 Implementar as funções:
-> setMotorA( int vel );
-> setMotorB( int vel );
 > readGiro(); <---  tenho um exemplo mas nao entendi, pego na aula
-> readColor();
-
-Falta colocar os métodos de motor e giro:
-> void turnAntiClockWise();
-> void turnClockWise();
+-> Não precisa mais!
 
 Falta testar e calibrar:
 > CheckSonar();
+> void turnAntiClockWise();
+> void turnClockWise();
+> readColor();
+
+Manual:
+http://tidia-ae.usp.br/access/content/group/b2575901-abac-46e7-9787-def1684c809a/Projetos/ROBOTCEV3FunctionReference.pdf

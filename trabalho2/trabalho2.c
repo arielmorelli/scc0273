@@ -2,12 +2,15 @@
 #define MAX_Y 11
 
 #define MIN_OBJECT_DIST 10
+#define RED 5
 
-#define COLOR S2
-#define GIRO S3
-#define SONAR S4
+#define ANGLE 90*2.35
+#define VELOCITY 25
 
-enum direction{ NONE, UP, DOWN, LEFT, RIGHT, WALL};
+#define COLOR S1
+#define SONAR S2
+
+enum direction{ NONE, UP, DOWN, LEFT, RIGHT, WALL, FREECITY, VERIFIED};
 enum bool{ false, true};
 
 direction current_direction;
@@ -18,7 +21,25 @@ int origin_x, origin_y;
 
 direction parents_map[MAX_X][MAX_Y];
 
+void setMotorA( int speed ){
+    motor[motorA] = speed;
+}
+
+void setMotorB( int speed ){
+    motor[motorB] = speed;
+}
+
+void goForward(){
+    setMotorA( VELOCITY );
+    setMotorB( VELOCITY );
+    wait1Msec(3000);
+    setMotorA( 0 );
+    setMotorB( 0 );
+}
+
 void init(){
+    setMotorA(0);
+    setMotorB(0);
     current_deep = 0;
     max_deep = 0;
 
@@ -112,12 +133,22 @@ int getForwardY(){
 }
 
 void turnAntiClockWise(){
-    //TODO: função de virar o robo 90 graus sentido anti-horario
+    resetMotorEncoder( motorA );
+    resetMotorEncoder( motorB );
+
+    setMotorTarget( motorA, ANGLE, VELOCITY );
+    setMotorTarget( motorB, ANGLE, -VELOCITY );
+    while( getMotorMoving(motorA) ){};
     current_direction = antiClockWiseDirection( current_direction );
 }
 
 void turnClockWise(){
-    //TODO: função de virar o robo 90 graus sentido horario
+    resetMotorEncoder( motorA );
+    resetMotorEncoder( motorB );
+
+    setMotorTarget( motorA, ANGLE, -VELOCITY );
+    setMotorTarget( motorB, ANGLE, VELOCITY );
+    while( getMotorMoving(motorA) ){};
     current_direction = clockWiseDirection( current_direction );
 }
 
@@ -128,7 +159,7 @@ int readSonar(){
 
     for( int count = 0 ; count < 20 ; count++ ){
         new_read = SensorValue[SONAR];
-        if( dist == new_read ){
+        if( abs(dist - new_read) < 0.01 ){
             repetitions++
         }
         else{
@@ -138,7 +169,7 @@ int readSonar(){
         if( repetitions == 5 ){
             return dist;
         }
-        delay(10);
+        wait1Msec(250);
     }
 }
 
@@ -147,16 +178,19 @@ bool checkSonar(){
         return true;
     }
     return false;
-
 }
 
 bool verifyWall( int next_x, int next_y ){
     if( (next_x < 0)  || (next_x >= MAX_X)
             || (next_y < 0)  || (next_y >= MAX_Y)
+            || ( parents_map[next_x][next_y] == VERIFIED ) 
             || ( parents_map[next_x][next_y] == WALL ) ){
         return true;
     }
-    if( parents_map[next_x][next_y] == NONE ){
+    if( parents_map[next_x][next_y] == FREECITY ){
+        return false;
+    }
+    else if( parents_map[next_x][next_y] == NONE ){
         if( checkSonar() ){
             parents_map[next_x][next_y] = WALL;
             return true;
@@ -187,10 +221,21 @@ void backToParent(){
     do{
         turnAntiClockWise();
     }while( current_direction != parents_map[current_x][current_y] );
+    parents_map[current_x][current_y] = VERIFIED;
     current_x = getForwardX();
     current_y = getForwardY();
     goForward();
     current_deep--;
+}
+
+void clearMap(){
+    for( int i = 0 ; i < MAX_X ; i++ ){
+        for( int j = 0 ; j < < MAX_Y; j++ ){
+            if( parents_map[next_x][next_y] == VERIFIED ){
+                parents_map[i][j] = FREECITY;
+            }
+        }
+    }
 }
 
 void verifyOrigin(){
@@ -198,6 +243,7 @@ void verifyOrigin(){
         if( current_y == origin_y ){
             if( current_direction == TOP ){
                 nextDeep();
+                clearMap();
                 do{
                     turnAntiClockWise();
                 }while( !goToSon() );
@@ -208,6 +254,31 @@ void verifyOrigin(){
 
 void turnToNextDirection(){
     turnClockWise();
+}
+
+bool isFinal(){
+    int repetitions = 0;
+    int color = 0;
+    int new_read;
+
+    for( int count = 0 ; count < 20 ; count++ ){
+        new_read = SensorValue[COLOR];
+        if( abs(dist - new_read) < 4 ){
+            repetitions++
+        }
+        else{
+            dist = new_read;
+            repetitions = 0;
+        }
+        if( repetitions == 5 ){
+            break.
+        }
+        wait1Msec(250);
+    }
+    if( color == RED ){
+        return true;
+    }
+    return false;
 }
 
 int main( int argc, char **argv ){
