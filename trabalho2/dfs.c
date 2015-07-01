@@ -15,7 +15,6 @@
 #define BLACK 1
 #define BLUE 2
 
-#define ANGLE 90*2.2
 #define VELOCITY 10
 #define FORWARDVEL 10
 
@@ -42,66 +41,66 @@ void setMotorB( int speed ){
 }
 
 void searchLine(){
-	setMotorA(VELOCITY );
-	setMotorB( -VELOCITY );
-	int a = 0;
-	while( (SensorValue[COLOR] != BLACK) && (a <= 10) ){
-		a++;
-		delay(100);
-	}
-	setMotorB(0);
-	setMotorA(0);
-	delay(100);
-	setMotorA( -VELOCITY );
-	setMotorB( VELOCITY );
-  a = 0;
-	while( (SensorValue[COLOR] != BLACK) && (a <= 20) ){
-		a++;
-		delay(100);
-	}
-	setMotorB(0);
-	setMotorA(0);
+    setMotorA(VELOCITY );
+    setMotorB( -VELOCITY );
+    int a = 0;
+    while( (SensorValue[COLOR] != BLACK) && (a <= 10) ){
+        a++;
+        delay(100);
+    }
+    setMotorB(0);
+    setMotorA(0);
+    delay(100);
+    setMotorA( -VELOCITY );
+    setMotorB( VELOCITY );
+    a = 0;
+    while( (SensorValue[COLOR] != BLACK) && (a <= 20) ){
+        a++;
+        delay(100);
+    }
+    setMotorB(0);
+    setMotorA(0);
 
 }
 
 void goForward(){
-	for( int a = 0 ; a < 18 ; a ++ ){
-		searchLine();
-		setMotorA( FORWARDVEL +1);
-		setMotorB( FORWARDVEL );
-		delay(390);
-		setMotorA( 0 );
-		setMotorB( 0 );
-	}
+    for( int a = 0 ; a < 18 ; a ++ ){
+        searchLine();
+        setMotorA( FORWARDVEL +1);
+        setMotorB( FORWARDVEL );
+        delay(390);
+        setMotorA( 0 );
+        setMotorB( 0 );
+    }
 
 }
 
 void init(){
 
-for( int a = 0;  a < 10 ; a++){
-goForward();
-delay(1000);
-}
-	setMotorA(0);
-	setMotorB(0);
+    for( int a = 0;  a < 10 ; a++){
+        goForward();
+        delay(1000);
+    }
+    setMotorA(0);
+    setMotorB(0);
 
-	for( int i = 0 ; i < MAX_X ; i++ ){
-		for( int j = 0 ; j < MAX_Y; j++ ){
-			parents_map[i][j] = NONE;
-		}
-	}
-	for( int i = 0 ; i < MAX_CITYS ; i++ ){
-		citys_x[i] = -1;
-		citys_y[i] = -1;
-	}
+    for( int i = 0 ; i < MAX_X ; i++ ){
+        for( int j = 0 ; j < MAX_Y; j++ ){
+            parents_map[i][j] = NONE;
+        }
+    }
+    for( int i = 0 ; i < MAX_CITYS ; i++ ){
+        citys_x[i] = -1;
+        citys_y[i] = -1;
+    }
 
-	origin_x = (int)(MAX_X/2);
-	origin_y = 0;
-	current_x = origin_x;
+    origin_x = (int)(MAX_X/2);
+    origin_y = 0;
+    current_x = origin_x;
 
-	parents_map[origin_x][origin_y] = FREECITY;
-	current_y = origin_y;
-	current_direction = DOWN;
+    parents_map[origin_x][origin_y] = FREECITY;
+    current_y = origin_y;
+    current_direction = DOWN;
 }
 
 direction antiClockWiseDirection( direction dir ){
@@ -180,15 +179,15 @@ int getForwardY(){
 }
 
 void turnAntiClockWise(){
-	resetMotorEncoder( motorB );
-	resetMotorEncoder( motorA );
+    resetMotorEncoder( motorB );
+    resetMotorEncoder( motorA );
 
-	setMotorTarget( motorB, ANGLE, VELOCITY );
-	setMotorTarget( motorA, ANGLE, -VELOCITY );
+    setMotorB( VELOCITY );
+    setMotorA( -VELOCITY );
     delay(390);
-	while( SensorValue[COLOR] != BLACK ){};
-	setMotorB(0);
-	setMotorA(0);
+    while( SensorValue[COLOR] != BLACK ){};
+    setMotorB(0);
+    setMotorA(0);
 
     current_direction = antiClockWiseDirection( current_direction );
 }
@@ -197,10 +196,10 @@ void turnClockWise(){
     resetMotorEncoder( motorA );
     resetMotorEncoder( motorB );
 
-    setMotorTarget( motorA, ANGLE, VELOCITY );
-    setMotorTarget( motorB, ANGLE, -VELOCITY );
+    setMotorA( VELOCITY );
+    setMotorB( -VELOCITY );
     delay(390);
-	while( SensorValue[COLOR] != BLACK){};
+    while( SensorValue[COLOR] != BLACK){};
     setMotorA(0);
     setMotorB(0);
 
@@ -208,25 +207,25 @@ void turnClockWise(){
 }
 
 int readSonar(){
-	int repetitions = 0;
-	int dist = 999999;
-	int new_read;
+    int repetitions = 0;
+    int dist = 999999;
+    int new_read;
 
-	for( int count = 0 ; count < 20 ; count++ ){
-		new_read = SensorValue[SONAR];
-		if( abs(dist - new_read) < 0.01 ){
-			repetitions++;
-		}
-		else{
-			dist = new_read;
-			repetitions = 0;
-		}
-		if( repetitions == 5 ){
-			return dist;
-		}
-		wait1Msec(50);
-	}
-	return dist;
+    for( int count = 0 ; count < 20 ; count++ ){
+        new_read = SensorValue[SONAR];
+        if( abs(dist - new_read) < 0.01 ){
+            repetitions++;
+        }
+        else{
+            dist = new_read;
+            repetitions = 0;
+        }
+        if( repetitions == 5 ){
+            return dist;
+        }
+        wait1Msec(50);
+    }
+    return dist;
 }
 
 bool checkSonar(){
@@ -288,8 +287,6 @@ void clearMap(){
     }
 }
 
-
-
 void turnToNextDirection(){
     turnClockWise();
 }
@@ -304,42 +301,42 @@ void addCity(){
 
 }
 
-void addCity(){
-	int i = 0;
-	while( citys_x[i] != -1 ){
-		i++;
-	}
-	citys_x[i] = current_x;
-	citys_y[i] = current_y;
-
-}
-
 void isFinal(){
-	int repetitions = 0;
-	int color = 0;
-	int new_read;
+    int repetitions = 0;
+    int color = 0;
+    int new_read;
 
-	for( int count = 0 ; count < 20 ; count++ ){
-		new_read = SensorValue[COLOR];
-		if( color == new_read ){
-			repetitions++;
-		}
-		else{
-			color = new_read;
-			repetitions = 0;
-		}
-		if( repetitions == 5 ){
-			break;
-		}
-		wait1Msec(50);
-	}
-	if( color == RED ){
-		final_x = current_x;
-		final_y = current_y;
-	}
-	else if( color == BLUE ){
-		addCity();
-	}
+    setMotorA( VELOCITY );
+    setMotorB( -VELOCITY );
+    delay(390);
+    setMotorA(0);
+    setMotorB(0);
+    for( int count = 0 ; count < 20 ; count++ ){
+        new_read = SensorValue[COLOR];
+        if( color == new_read ){
+            repetitions++;
+        }
+        else{
+            color = new_read;
+            repetitions = 0;
+        }
+        if( repetitions == 5 ){
+            break;
+        }
+        wait1Msec(50);
+    }
+    if( color == RED ){
+        final_x = current_x;
+        final_y = current_y;
+    }
+    else if( color == BLUE ){
+        addCity();
+    }
+    setMotorA( -VELOCITY );
+    setMotorB( VELOCITY );
+    delay(390);
+    setMotorA(0);
+    setMotorB(0);
 }
 
 bool verifyRegion( int x, int y ){
@@ -363,38 +360,38 @@ bool verifyRegion( int x, int y ){
 }
 
 bool hasAnyCityLeft(){
-	if( final_x == -1 ){
-		return true;
-	}
-	for( int i = 0 ; i < MAX_CITYS ; i++ ){
-		if( citys_x[i] == -1 ){
-			return true;
-		}
-	}
-	return false;
+    if( final_x == -1 ){
+        return true;
+    }
+    for( int i = 0 ; i < MAX_CITYS ; i++ ){
+        if( citys_x[i] == -1 ){
+            return true;
+        }
+    }
+    return false;
 }
 
 task main( ){
 
-	setSensorMode(COLOR, 8);
-	delay(1000);
-	setSensorMode(COLOR, 2);
+    setSensorMode(COLOR, 8);
+    delay(1000);
+    setSensorMode(COLOR, 2);
 
-	init();
+    init();
 
-	isFinal();
+    isFinal();
 
-	while( hasAnyCityLeft() ) {
-		turnToNextDirection();
+    while( hasAnyCityLeft() ) {
+        turnToNextDirection();
 
-		while( !goToSon() ){
-			turnAntiClockWise();
-			if( current_direction == parents_map[current_x][current_y] ){
-				backToParent();
-				continue;
-			}
+        while( !goToSon() ){
+            turnAntiClockWise();
+            if( current_direction == parents_map[current_x][current_y] ){
+                backToParent();
+                continue;
+            }
 
-		}
-	}
+        }
+    }
 
 }
