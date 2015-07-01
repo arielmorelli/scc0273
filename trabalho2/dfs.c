@@ -25,10 +25,8 @@
 typedef enum { NONE, UP, DOWN, LEFT, RIGHT, WALL, FREECITY, VERIFIED} direction;
 
 direction current_direction;
-int max_deep;
 int citys_x[MAX_CITYS];
 int citys_y[MAX_CITYS];
-int current_deep;
 int current_x, current_y;
 int origin_x, origin_y;
 int final_x, final_y;
@@ -86,8 +84,6 @@ delay(1000);
 }
 	setMotorA(0);
 	setMotorB(0);
-	current_deep = 0;
-	max_deep = 0;
 
 	for( int i = 0 ; i < MAX_X ; i++ ){
 		for( int j = 0 ; j < MAX_Y; j++ ){
@@ -106,7 +102,6 @@ delay(1000);
 	parents_map[origin_x][origin_y] = FREECITY;
 	current_y = origin_y;
 	current_direction = DOWN;
-	max_deep++;
 }
 
 direction antiClockWiseDirection( direction dir ){
@@ -270,12 +265,7 @@ bool goToSon(){
     current_x = next_x;
     current_y = next_y;
     parents_map[current_x][current_y] = oppositeDirection(current_direction);
-    current_deep++;
     return true;
-}
-
-void nextDeep(){
-    max_deep++;
 }
 
 void backToParent(){
@@ -286,7 +276,6 @@ void backToParent(){
     current_x = getForwardX();
     current_y = getForwardY();
     goForward();
-    current_deep--;
 }
 
 void clearMap(){
@@ -385,20 +374,6 @@ bool hasAnyCityLeft(){
 	return false;
 }
 
-bool verifyOrigin(){
-	if( current_x == origin_x ){
-		if( current_y == origin_y ){
-			if( current_direction == UP ){
-				nextDeep();
-				clearMap();
-				turnAntiClockWise();
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
 task main( ){
 
 	setSensorMode(COLOR, 8);
@@ -410,13 +385,7 @@ task main( ){
 	isFinal();
 
 	while( hasAnyCityLeft() ) {
-		if( current_deep == max_deep ){
-			isFinal();
-			backToParent();
-			continue;
-		}
 		turnToNextDirection();
-		verifyOrigin();
 
 		while( !goToSon() ){
 			turnAntiClockWise();
