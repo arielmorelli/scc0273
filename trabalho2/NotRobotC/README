@@ -1,0 +1,35 @@
+//*****************************************\\
+*                                           *
+*  Programas desenvolvidos para a matéria:  *
+*  SCC-273 – Robôs Móveis Inteligentes      *
+*                                           *
+*  Alunos:                                  *
+*  Ariel Morelli nUsp: 7573419              *
+*  Felipe Mocruha Alcantara nUsp: 8531949   *
+*                                           *
+\\*****************************************//
+
+Compilação:
+Para compilar os dois programas utilize o comando make.
+Para compilar na mão, utilize:
+ - g++ dfs.c -o DFS;
+ - g++ bfs.c -o BFS; 
+
+Executando:
+Para executar com o mapa padrão (pequeno), utilize: make dfs e make bfs.
+Para executar diferentes mapas ou na mão, utlize:
+ - ./BFS [nome_do_mapa]
+ - ./DFS [nome_do_mapa]
+
+Mapas:
+Os programas tem dois mapas de teste. Para criar um novo mapa, utilizar a seguinte legenda:
+ - 0 - espaço livre;
+ - 1 - parede;
+ - 2 - cidade;
+ - 3 - cidade final;
+ - Primeira posição da matriz tem que ser 0, é de onde o robo vai sair. (Posição (0,0) )
+ - O mapa deve ter quatro cidades (número 2)
+ - O mapa deve ter uma cidade final (número 3)
+
+Observação:
+Os programas foram apenas testados em sistema operacional Linux.

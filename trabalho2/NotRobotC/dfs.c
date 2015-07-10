@@ -1,7 +1,7 @@
 #include "notrobotc.h"
 
-#define MAX_X 11
-#define MAX_Y 11
+#define MAX_X 1000
+#define MAX_Y 1000
 #define MAX_CITYS 4
 
 #define MIN_OBJECT_DIST 25
@@ -44,19 +44,19 @@ void printCell( int value ){
     }
     else if( value == 1){
         printf("\x1B[35m");
-    printf("#");
+        printf("#");
     }
     else if( value == 2){
         printf("\x1B[34m");
-    printf("C");
+        printf("C");
     }
     else if( value == 3){
         printf("\x1B[31m");
-    printf("C");
+        printf("C");
     }
     else if( value == 4){
         printf("\x1B[33m");
-    printf("O");
+        printf("O");
     }
     printf("\033[0m");
 }
@@ -87,11 +87,11 @@ void printMap(){
         printf("\033[0m");
     }
 
-    printf("Actual deep: %d | Max deep: %d\n\n"
-            ,current_deep, max_deep);
+    printf("Actual deep: %d\n\n"
+            ,current_deep);
 
 
-    for( int i = 0 ; i < max_col+1 ; i++ ){
+    for( int i = 0 ; i < max_col+2 ; i++ ){
         printf("\x1B[35m");
         printf("#");
         printf("\033[0m");
@@ -101,7 +101,7 @@ void printMap(){
         printf("\x1B[35m");
         printf("#");
         printf("\033[0m");
-        for( int j = 0 ; j < MAX_Y; j++ ){
+        for( int j = 0 ; j < max_col; j++ ){
             if( ( current_x == i ) && (current_y == j ) ){
                 printCell(4);
             }
@@ -109,6 +109,9 @@ void printMap(){
                 printCell(map[i][j]);
             }
         }
+        printf("\x1B[35m");
+        printf("#");
+        printf("\033[0m");
         printf("\n");
     }
 
@@ -458,7 +461,7 @@ void loadMap( char *map_file ){
             map[row][col] = 1;
             row++;
             if( row > max_row ){
-max_row = row;
+                max_row = row;
             }
             col = 0;
         }
@@ -474,6 +477,31 @@ max_row = row;
         map[row-1][i] = 1;
     }
     fclose(f);
+}
+
+void goToFinal(){
+    while( current_deep != 0 ){
+        backToParent();
+    }
+    max_deep = 999;
+
+    while( true ){
+        if( map[current_x][current_y] == 3){
+            return;
+        }
+        turnToNextDirection();
+
+        while( !goToSon() ){
+            turnAntiClockWise();
+            if( verifyOrigin() ){
+                continue;
+            }
+            if( current_direction == parents_map[current_x][current_y] ){
+                backToParent();
+                continue;
+            }
+        }
+    }
 }
 
 task main( int argc, char **argv ){
@@ -509,5 +537,5 @@ task main( int argc, char **argv ){
 
         }
     }
-
+    goToFinal();
 }
